@@ -1,0 +1,200 @@
+{% load static currency %}
+<!doctype html>
+<html lang="en-KH">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Checkout — SwayStudio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'shop/store.css' %}" />
+  </head>
+  <body class="checkout-page">
+    <header class="checkout-header">
+      <a class="wordmark" href="{% url 'shop:home' %}"
+        ><span>Sway</span><i aria-hidden="true"></i><b>Studio</b></a
+      >
+      <a class="back-link" href="{% url 'shop:home' %}"
+        ><span aria-hidden="true">←</span> Back to the good stuff</a
+      >
+    </header>
+    <main class="checkout-layout">
+      <section class="checkout-main">
+        <p class="eyebrow">
+          <span class="eyebrow-line"></span> One last little thing
+        </p>
+        <h1>Let's get it <em>to you.</em></h1>
+        <form method="post" class="checkout-form" novalidate>
+          {% csrf_token %}
+          <div class="form-alert" role="alert">{{ form.non_field_errors }}</div>
+          <fieldset>
+            <legend><span>01</span> Your details</legend>
+            <div class="form-grid">
+              <div class="form-field field-wide">
+                <label for="{{ form.full_name.id_for_label }}">Full name</label>
+                {{ form.full_name }}<span class="field-error"
+                  >{{ form.full_name.errors.0 }}</span
+                >
+              </div>
+              <div class="form-field field-wide">
+                <label for="{{ form.email.id_for_label }}">Email</label>
+                {{ form.email }}<span class="field-error"
+                  >{{ form.email.errors.0 }}</span
+                >
+              </div>
+              <div class="form-field">
+                <label for="{{ form.phone.id_for_label }}"
+                  >Cambodian phone number</label
+                >
+                {{ form.phone }}<span class="field-error"
+                  >{{ form.phone.errors.0 }}</span
+                >
+              </div>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend><span>02</span> Where to?</legend>
+            <div class="form-grid">
+              <div class="form-field field-wide">
+                <label for="{{ form.address.id_for_label }}"
+                  >Street address</label
+                >
+                {{ form.address }}<span class="field-error"
+                  >{{ form.address.errors.0 }}</span
+                >
+              </div>
+              <div class="form-field">
+                <label for="{{ form.city.id_for_label }}">Commune / city</label>
+                {{ form.city }}<span class="field-error"
+                  >{{ form.city.errors.0 }}</span
+                >
+              </div>
+              <div class="form-field">
+                <label for="{{ form.postal_code.id_for_label }}"
+                  >Postal code</label
+                >
+                {{ form.postal_code }}<span class="field-error"
+                  >{{ form.postal_code.errors.0 }}</span
+                >
+              </div>
+              <div class="form-field">
+                <label for="{{ form.district.id_for_label }}"
+                  >District / khan</label
+                >
+                {{ form.district }}<span class="field-error"
+                  >{{ form.district.errors.0 }}</span
+                >
+              </div>
+              <div class="form-field">
+                <label for="{{ form.province.id_for_label }}"
+                  >Province / city</label
+                >
+                {{ form.province }}<span class="field-error"
+                  >{{ form.province.errors.0 }}</span
+                >
+              </div>
+              <div class="form-field field-wide">
+                <label for="{{ form.notes.id_for_label }}"
+                  >Delivery notes</label
+                >
+                {{ form.notes }}<span class="field-error"
+                  >{{ form.notes.errors.0 }}</span
+                >
+              </div>
+            </div>
+          </fieldset>
+          <p class="checkout-disclaimer">
+            Cambodia delivery: $2 in Phnom Penh, $4 to other provinces, free for
+            orders over $100. We charge in USD; KHR estimates use the current
+            store display rate.
+          </p>
+          {% if request.user.is_authenticated %}
+          <div class="save-address-field">
+            <label for="{{ form.save_address.id_for_label }}"
+              >{{ form.save_address }} Save this delivery address to my
+              account</label
+            >
+          </div>
+          {% endif %}
+          <div class="form-field checkout-coupon">
+            <label for="{{ form.coupon_code.id_for_label }}"
+              >Discount code</label
+            >
+            {{ form.coupon_code }}<span class="field-error"
+              >{{ form.coupon_code.errors.0 }}</span
+            >
+          </div>
+          <div class="form-field payment-choice">
+            <label for="{{ form.payment_method.id_for_label }}"
+              >How would you like to pay?</label
+            >
+            {{ form.payment_method }}<span class="field-error"
+              >{{ form.payment_method.errors.0 }}</span
+            >
+            {% if not payway_ready %}<small
+              >ABA PayWay checkout will appear here after merchant credentials
+              are configured. Cash on delivery is available meanwhile.</small
+            >{% endif %}
+          </div>
+          <button class="button button-coral place-order" type="submit">
+            Place my order <span aria-hidden="true">→</span>
+          </button>
+        </form>
+      </section>
+      <aside class="order-summary">
+        <h2>Your bag <span>({{ cart.count }})</span></h2>
+        {% for item in cart.items %}
+        <div class="summary-product">
+          <img src="{{ item.image_url }}" alt="" />
+          <div>
+            <strong>{{ item.name }}</strong
+            ><small
+              >Qty {{ item.quantity }}{% if item.variant_label %} · {{ item.variant_label }}{% endif %}</small
+            >
+          </div>
+          <span
+            >${{ item.line_total|floatformat:2 }}<small
+              >{{ item.line_total|khr }}</small
+            ></span
+          >
+        </div>
+        {% empty %}
+        <p class="summary-empty">
+          Your bag is empty. <a href="{% url 'shop:home' %}">Let's fix that.</a>
+        </p>
+        {% endfor %}
+        <div class="summary-totals">
+          <p>
+            <span>Subtotal</span
+            ><span
+              >${{ cart.subtotal|floatformat:2 }}<small
+                >{{ cart.subtotal|khr }}</small
+              ></span
+            >
+          </p>
+          <p><span>Shipping</span><span>{{ cart.shipping_label }}</span></p>
+          <p class="summary-grand">
+            <strong>Total</strong
+            ><strong
+              >${{ cart.total|floatformat:2 }}<small
+                >{{ cart.total|khr }}</small
+              ></strong
+            >
+          </p>
+        </div>
+        <p class="summary-note">
+          <span aria-hidden="true">✳</span> Complimentary shipping on orders
+          over $100
+        </p>
+      </aside>
+    </main>
+    <footer class="checkout-footer">
+      <span>© 2026 SwayStudio</span><span>Made for your kind of day.</span>
+    </footer>
+  </body>
+</html>

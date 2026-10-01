@@ -1,0 +1,60 @@
+{% load static %}
+<!doctype html>
+<html lang="en-KH">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fff" />
+    <title>
+      {% if mode == 'register' %}Create account{% else %}Sign in{% endif %} —
+      SwayStudio
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'shop/store.css' %}" />
+  </head>
+  <body class="account-page">
+    <header class="checkout-header">
+      <a class="wordmark" href="{% url 'shop:home' %}"
+        ><span>Sway</span><i aria-hidden="true"></i><b>Studio</b></a
+      ><a class="back-link" href="{% url 'shop:home' %}"
+        ><span aria-hidden="true">←</span> Back to the shop</a
+      >
+    </header>
+    <main class="auth-panel">
+      <p class="eyebrow">
+        <span class="eyebrow-line"></span> SwayStudio Cambodia
+      </p>
+      <h1>
+        {% if mode == 'register' %}A little place<br />to <em>call yours.</em>{% else %}Welcome <em>back.</em>{% endif %}
+      </h1>
+      <form method="post" class="auth-form">
+        {% csrf_token %}<input type="hidden" name="next" value="{{ next }}" />
+        {% if form.non_field_errors %}
+        <div class="form-alert" role="alert">{{ form.non_field_errors }}</div>
+        {% endif %} {% for field in form %}
+        <div class="form-field">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<span class="field-error"
+            >{{ error }}</span
+          >{% endfor %}
+        </div>
+        {% endfor %}
+        <button class="button button-coral" type="submit">
+          {% if mode == 'register' %}Create my account{% else %}Sign in{% endif %}<span aria-hidden="true">→</span>
+        </button>
+      </form>
+      <p class="auth-switch">
+        {% if mode == 'register' %}Already have an account?
+        <a href="{% url 'shop:login' %}">Sign in</a>{% else %}New around here?
+        <a href="{% url 'shop:register' %}">Create an account</a>{% endif %}
+      </p>
+    </main>
+    <footer class="checkout-footer">
+      <span>© 2026 SwayStudio</span><span>Made for your kind of day.</span>
+    </footer>
+  </body>
+</html>

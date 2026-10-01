@@ -1,0 +1,92 @@
+{% load static currency %}
+<!doctype html>
+<html lang="en-KH">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Order update — SwayStudio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'shop/store.css' %}" />
+  </head>
+  <body class="success-page">
+    <header class="checkout-header">
+      <a class="wordmark" href="{% url 'shop:home' %}"
+        ><span>Sway</span><i aria-hidden="true"></i><b>Studio</b></a
+      >
+    </header>
+    <main class="success-content">
+      <div class="success-mark" aria-hidden="true">✳</div>
+      <p class="eyebrow">
+        <span class="eyebrow-line"></span> SwayStudio Cambodia
+      </p>
+      {% if order_cancelled %}
+      <h1>Your payment needs <em>another try.</em></h1>
+      <p class="success-intro">
+        We could not confirm payment. Your reserved pieces have been returned to
+        available stock. Please contact the studio if you need help.
+      </p>
+      {% endif %} {% if payway_pending %}
+      <h1>Your order is <em>being confirmed.</em></h1>
+      <p class="success-intro">
+        Your secure ABA PayWay payment is still pending. We will update your
+        order once the signed payment confirmation arrives.
+      </p>
+      {% endif %} {% if order_confirmed %}
+      <h1>Good things are <em>on their way.</em></h1>
+      <p class="success-intro">
+        Thanks, {{ order.full_name }}. Your order is in, and we have saved all
+        the details.
+      </p>
+      {% endif %}
+      <div class="success-reference">
+        <span>ORDER REFERENCE</span><strong>{{ order.public_id }}</strong>
+      </div>
+      <section class="confirmation-items">
+        <h2>In your order</h2>
+        {% for item in order.items.all %}
+        <div class="confirmation-item">
+          <span
+            >{{ item.quantity }} × {{ item.product_name }}<small
+              >{{ item.variant_label }}</small
+            ></span
+          >
+          <strong
+            >${{ item.line_total|floatformat:2 }}<small
+              >{{ item.line_total|khr }}</small
+            ></strong
+          >
+        </div>
+        {% endfor %}
+      </section>
+      <div class="success-details">
+        <div>
+          <span>Delivering to</span
+          ><strong
+            >{{ order.full_name }}<br />{{ order.formatted_delivery_address }}</strong
+          >
+        </div>
+        <div>
+          <span>Order total</span
+          ><strong
+            >${{ order.total|floatformat:2 }}<small
+              >{{ order.total|khr }}</small
+            ></strong
+          >
+        </div>
+      </div>
+      <a class="button button-dark" href="{% url 'shop:home' %}"
+        >Back to SwayStudio <span aria-hidden="true">→</span></a
+      >
+    </main>
+    <footer class="checkout-footer">
+      <span>© 2026 SwayStudio · Phnom Penh, Cambodia</span
+      ><span>Made for your kind of day.</span>
+    </footer>
+  </body>
+</html>

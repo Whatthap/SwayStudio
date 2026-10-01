@@ -1,0 +1,13 @@
+{% for review in reviews %}
+<article class="review-item">
+  <div class="review-heading">
+    <strong>{{ review.user.first_name|default:review.user.username }}</strong
+    ><span>{{ review.rating }}/5 · {{ review.created_at|date:'j M Y' }}</span>
+  </div>
+  <p>{{ review.body }}</p>
+</article>
+{% empty %}
+<p class="reviews-empty">
+  No reviews yet. Be the first to share a little love.
+</p>
+{% endfor %}

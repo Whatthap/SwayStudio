@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en-KH">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Secure ABA PayWay checkout — SwayStudio</title>
+  </head>
+  <body>
+    <main>
+      <h1>Opening ABA PayWay</h1>
+      <p>
+        Continue to the secure ABA PayWay checkout to pay with ABA Pay, KHQR, or
+        an available card.
+      </p>
+      <form
+        id="payway-checkout"
+        method="post"
+        action="{{ payway_url }}"
+        enctype="multipart/form-data"
+      >
+        {% for name, value in fields %}<input
+          type="hidden"
+          name="{{ name }}"
+          value="{{ value }}"
+        />{% endfor %}
+        <button type="submit">Continue to secure payment</button>
+      </form>
+    </main>
+    <script>
+      document.getElementById("payway-checkout").requestSubmit();
+    </script>
+  </body>
+</html>

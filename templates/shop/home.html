@@ -1,0 +1,417 @@
+{% load static currency %}
+<!doctype html>
+<html lang="en-KH">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Gen Z streetwear for your everyday rotation. Shop relaxed fits, graphic layers, and new drops from Sway."
+    />
+    <title>Sway — Gen Z Streetwear for Your Everyday</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{% static 'shop/store.css' %}?v=streetwear-1"
+    />
+    <script src="{% static 'shop/store.js' %}" defer></script>
+  </head>
+  <body data-favorite-slugs="{{ favorite_slugs|join:',' }}">
+    <form class="visually-hidden" aria-hidden="true">{% csrf_token %}</form>
+    <div class="announcement">
+      Phnom Penh, Cambodia · Delivery across Cambodia
+      <span>Complimentary shipping over $100</span>
+    </div>
+    <header class="site-header">
+      <a
+        class="wordmark"
+        href="{% url 'shop:home' %}"
+        aria-label="Sway streetwear home"
+        ><img src="{% static 'shop/sway-logo.png' %}" alt=""
+      /></a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#collection">New drops</a>
+        <a href="#collection" data-category-link="tops">Tops</a>
+        <a href="#collection" data-category-link="bottoms">Bottoms</a>
+        <a href="#story">Our vibe</a>
+        {% if is_authenticated %}<a href="{% url 'shop:account' %}"
+          >My account</a
+        >{% else %}<a href="{% url 'shop:login' %}">Sign in</a>{% endif %}
+      </nav>
+      <div class="header-actions">
+        <form
+          class="search-form"
+          action="{% url 'shop:home' %}"
+          method="get"
+          role="search"
+        >
+          <label class="visually-hidden" for="site-search"
+            >Search the collection</label
+          >
+          <span aria-hidden="true" class="search-icon">⌕</span>
+          <input
+            id="site-search"
+            type="search"
+            name="q"
+            value="{{ query }}"
+            placeholder="Find your fit"
+          />
+        </form>
+        <button
+          class="bag-trigger"
+          type="button"
+          data-open-cart
+          aria-label="Open shopping bag"
+        >
+          <span class="bag-icon" aria-hidden="true">▱</span
+          ><span class="bag-label">Bag</span
+          ><span class="bag-count" data-cart-count>{{ cart.count }}</span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">
+            <span class="eyebrow-line"></span> Gen Z streetwear · Phnom Penh
+          </p>
+          <h1 id="hero-title">Your fit.<br /><em>Your rules.</em></h1>
+          <p class="hero-description">
+            Oversized layers, graphic tees, and easy fits for whatever is next.
+          </p>
+          <a class="button button-dark" href="#collection"
+            >Shop the drop <span aria-hidden="true">↘</span></a
+          >
+          <div class="hero-note">
+            <span class="note-star" aria-hidden="true">✳</span
+            ><span>Built for your<br />everyday.</span>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <img
+            src="{% static 'shop/streetwear-hero.jpg' %}"
+            alt="Model wearing a relaxed hoodie and checkered trousers"
+            fetchpriority="high"
+          />
+          <div class="hero-sticker">
+            <span>Wear it</span><strong>your way</strong
+            ><i aria-hidden="true">✳</i>
+          </div>
+          <div class="hero-caption">
+            <span>SWAY / 01</span><span>STREET-READY LAYERS</span>
+          </div>
+        </div>
+        <div class="hero-side-label" aria-hidden="true">
+          SWAY YOUR WAY · SWAY YOUR WAY ·
+        </div>
+      </section>
+
+      <section
+        class="collection section-wrap"
+        id="collection"
+        aria-labelledby="collection-title"
+      >
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">
+              <span class="eyebrow-line"></span> Fresh off the drop
+            </p>
+            <h2 id="collection-title">Fits for your rotation<span>.</span></h2>
+          </div>
+          <p class="section-aside">
+            Easy layers, graphic tees, and relaxed fits<br />to make your own.
+          </p>
+        </div>
+
+        <div class="collection-tools">
+          <div class="category-list" aria-label="Filter by category">
+            <a
+              class="category-chip {% if not selected_category %}is-active{% endif %}"
+              href="{% url 'shop:home' %}{% if query %}?q={{ query|urlencode }}{% endif %}"
+              >Everything</a
+            >
+            {% for value, label in categories %}
+            <a
+              class="category-chip {% if selected_category == value %}is-active{% endif %}"
+              href="?category={{ value }}{% if query %}&q={{ query|urlencode }}{% endif %}"
+              >{{ label }}</a
+            >
+            {% endfor %}
+          </div>
+          <label class="sort-control"
+            >Sort
+            <select
+              onchange="this.form.submit()"
+              form="catalog-filters"
+              name="sort"
+              aria-label="Sort products"
+            >
+              <option
+                value="featured"
+                {% if sort == "featured" %}selected{% endif %}
+              >
+                Featured
+              </option>
+              <option
+                value="newest"
+                {% if sort == "newest" %}selected{% endif %}
+              >
+                Newest
+              </option>
+              <option
+                value="price-low"
+                {% if sort == "price-low" %}selected{% endif %}
+              >
+                Price: low to high
+              </option>
+              <option
+                value="price-high"
+                {% if sort == "price-high" %}selected{% endif %}
+              >
+                Price: high to low
+              </option>
+            </select>
+          </label>
+          <span class="result-count">{{ products|length }} pieces</span>
+        </div>
+        <form id="catalog-filters" class="visually-hidden" method="get">
+          {% if selected_category %}<input
+            type="hidden"
+            name="category"
+            value="{{ selected_category }}"
+          />{% endif %} {% if query %}<input
+            type="hidden"
+            name="q"
+            value="{{ query }}"
+          />{% endif %}
+        </form>
+
+        {% if query %}
+        <p class="search-note">
+          Showing pieces for <strong>“{{ query }}”</strong>
+          <a href="{% url 'shop:home' %}">Clear search</a>
+        </p>
+        {% endif %}
+
+        <div class="product-grid">
+          {% for product in products %}
+          <article class="product-card" data-product-card>
+            <div class="product-image-wrap">
+              <a
+                class="product-image-link"
+                href="{% url 'shop:product_detail' product.slug %}"
+                aria-label="View {{ product.name }} details"
+              >
+                <img
+                  class="product-image"
+                  src="{{ product.image_url }}"
+                  alt="{{ product.image_alt }}"
+                  loading="lazy"
+                />
+              </a>
+              {% if product.badge %}<span class="product-badge"
+                >{{ product.badge }}</span
+              >{% endif %}
+              <button
+                class="favorite-button"
+                type="button"
+                aria-label="Add {{ product.name }} to favorites"
+                data-favorite="{{ product.slug }}"
+                data-authenticated="{{ is_authenticated|yesno:'true,false' }}"
+              >
+                <span aria-hidden="true">♡</span>
+              </button>
+              {% if product.has_variants %}
+              <a
+                class="quick-add quick-options"
+                href="{% url 'shop:product_detail' product.slug %}"
+                ><span aria-hidden="true">+</span>Choose options</a
+              >
+              {% endif %} {% if not product.has_variants %}
+              <button
+                class="quick-add"
+                type="button"
+                data-add-to-bag="{{ product.slug }}"
+              >
+                <span aria-hidden="true">+</span>Add to bag
+              </button>
+              {% endif %}
+            </div>
+            <div class="product-meta">
+              <div>
+                <p class="product-category">
+                  {{ product.get_category_display }}
+                </p>
+                <h3>
+                  <a href="{% url 'shop:product_detail' product.slug %}"
+                    >{{ product.name }}</a
+                  >
+                </h3>
+              </div>
+              <p class="product-price">
+                ${{ product.price|floatformat:2 }}<small
+                  >{{ product.price|khr }}</small
+                >
+              </p>
+            </div>
+          </article>
+          {% empty %}
+          <div class="empty-results">
+            <h3>Nothing here just yet.</h3>
+            <p>Try another search or browse the whole collection.</p>
+            <a class="text-link" href="{% url 'shop:home' %}"
+              >See everything <span aria-hidden="true">→</span></a
+            >
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="story-band" id="story">
+        <div class="story-image">
+          <img
+            src="{% static 'shop/streetwear-story.jpg' %}"
+            alt="Young friends in colorful streetwear with skateboards"
+            loading="lazy"
+          />
+        </div>
+        <div class="story-copy">
+          <p class="eyebrow">
+            <span class="eyebrow-line"></span> A note from the crew
+          </p>
+          <h2>No dress code.<br /><em>Just your style.</em></h2>
+          <p>
+            Streetwear is better when it feels like you. Mix your favorite
+            pieces, make the fit yours, and wear it your way.
+          </p>
+          <a class="text-link" href="#collection"
+            >Find your fit <span aria-hidden="true">→</span></a
+          >
+          <span class="story-doodle" aria-hidden="true">S</span>
+        </div>
+      </section>
+
+      <section class="promise-strip" aria-label="SwayStudio promises">
+        <div>
+          <span class="promise-icon" aria-hidden="true">✳</span>
+          <p>
+            <strong>Easy everyday fits</strong
+            ><small>Relaxed pieces for your regular rotation.</small>
+          </p>
+        </div>
+        <div>
+          <span class="promise-icon" aria-hidden="true">↗</span>
+          <p>
+            <strong>Your style, your rules</strong
+            ><small>Pick a piece. Make the look your own.</small>
+          </p>
+        </div>
+        <div>
+          <span class="promise-icon" aria-hidden="true">♡</span>
+          <p>
+            <strong>Delivered across Cambodia</strong
+            ><small>Free shipping when your bag hits $100.</small>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a
+        class="wordmark footer-wordmark"
+        href="{% url 'shop:home' %}"
+        aria-label="Sway streetwear home"
+        ><img src="{% static 'shop/sway-logo.png' %}" alt=""
+      /></a>
+      <p>Gen Z streetwear for your everyday rotation.</p>
+      <div class="footer-links">
+        <a href="#collection">Shop all</a
+        ><a href="{% url 'shop:policy' 'shipping' %}">Shipping</a
+        ><a href="{% url 'shop:policy' 'returns' %}">Returns</a
+        ><a href="{% url 'shop:policy' 'privacy' %}">Privacy</a
+        ><a href="{% url 'shop:contact' %}">Contact</a>
+      </div>
+      <small>© 2026 SwayStudio. Made for your kind of day.</small>
+    </footer>
+
+    <div class="cart-overlay" data-cart-overlay></div>
+    <aside
+      class="cart-drawer"
+      data-cart-drawer
+      aria-labelledby="cart-title"
+      aria-hidden="true"
+      inert
+    >
+      <div class="cart-drawer-header">
+        <div>
+          <p class="eyebrow">Your good choices</p>
+          <h2 id="cart-title">
+            Your bag <span data-drawer-count>({{ cart.count }})</span>
+          </h2>
+        </div>
+        <button
+          class="icon-button"
+          type="button"
+          data-close-cart
+          aria-label="Close shopping bag"
+        >
+          ×
+        </button>
+      </div>
+      <p
+        class="cart-feedback"
+        data-cart-feedback
+        role="status"
+        aria-live="polite"
+      ></p>
+      <div class="cart-items" data-cart-items></div>
+      <div
+        class="cart-empty"
+        data-cart-empty
+        {% if cart.items %}hidden{% endif %}
+      >
+        <span aria-hidden="true">♡</span>
+        <h3>Your bag is taking a breather.</h3>
+        <p>It might be time to find it something to wear.</p>
+        <button type="button" class="text-link" data-close-cart>
+          Explore the collection <span aria-hidden="true">→</span>
+        </button>
+      </div>
+      <div
+        class="cart-drawer-footer"
+        data-cart-footer
+        {% if not cart.items %}hidden{% endif %}
+      >
+        <p class="shipping-hint" data-shipping-hint></p>
+        <div class="cart-total-line">
+          <span>Subtotal</span
+          ><strong data-cart-subtotal
+            >${{ cart.subtotal|floatformat:2 }}<small data-cart-subtotal-khr
+              >{{ cart.subtotal|khr }}</small
+            ></strong
+          >
+        </div>
+        <div class="cart-total-line shipping-line">
+          <span>Shipping</span
+          ><strong data-cart-shipping>{{ cart.shipping_label }}</strong>
+        </div>
+        <a
+          class="button button-coral checkout-link"
+          href="{% url 'shop:checkout' %}"
+          >Continue to checkout <span aria-hidden="true">→</span></a
+        >
+        <button type="button" class="continue-shopping" data-close-cart>
+          Keep looking
+        </button>
+      </div>
+    </aside>
+    {{ cart|json_script:'initial-cart' }}
+  </body>
+</html>
