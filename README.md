@@ -41,6 +41,19 @@ Run the regression suite with `python manage.py test shop`.
 
 ## Temporary public preview on Render
 
-The `render.yaml` Blueprint defines a free web service and free PostgreSQL database for previewing the storefront. Push the project to GitHub, then in Render choose **New > Blueprint**, connect the private `Whatthap/SwayStudio` repository, and apply the Blueprint. Enter the real `STORE_CONTACT_EMAIL` in Render when prompted. Render will provide the public `.onrender.com` URL after the first deploy.
+The `render.yaml` Blueprint defines a free web service and free PostgreSQL database for previewing the storefront. Push the project to GitHub, then in Render choose **New > Blueprint**, connect the `Whatthap/SwayStudio` repository, and apply the Blueprint. Enter the real `STORE_CONTACT_EMAIL` in Render when prompted. Render will provide the public `.onrender.com` URL after the first deploy.
 
-Free Render web services sleep after 15 minutes without traffic. Free PostgreSQL databases expire after 30 days and are later deleted, so this setup is only for a temporary preview; do not store real customer or order data there. Use a paid persistent database and hosting plan before accepting real orders. The preview uses sample seeded inventory and cash on delivery; configure the real business contact, policies, shipping, stock, and payment details before launch.
+### Do not take real orders on the free tier
+
+The free tier deletes your data. The exact limits, as documented by Render:
+
+- **The database is destroyed 30 days after creation.** A free PostgreSQL instance expires, then has a 14-day grace period to upgrade, and is then deleted *along with all of its data*. Every order, account, address, and review in it is lost with no backup. Free PostgreSQL also has no backup support at all and is capped at 1 GB.
+- **The web service sleeps after 15 minutes** without inbound traffic and takes roughly a minute to wake, during which visitors get a loading page instead of your site.
+- **The filesystem is ephemeral.** Anything written to local disk is lost on every redeploy, restart, or spin-down. This is why the Blueprint uses `DATABASE_URL` for state instead of the local `db.sqlite3`. Free instances cannot attach a persistent disk.
+- **Free instances may be restarted at any time**, and free web services get no SSH shell.
+
+Only one free PostgreSQL database is allowed per workspace. Render does not grant free PostgreSQL to every new account, so the Blueprint may ask for a payment method at that step.
+
+Because of the above, treat this strictly as a clickable demo: sample seeded inventory, cash on delivery, no real payments. Move to a paid plan with a persistent database before accepting real orders. The cheapest always-on option is a Fly.io machine with a persistent volume running the existing SQLite; the simplest managed option is a Render Starter web service plus a paid PostgreSQL instance.
+
+The preview uses sample seeded inventory and cash on delivery; configure the real business contact, policies, shipping, stock, and payment details before launch.
