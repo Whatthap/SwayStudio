@@ -1,0 +1,31 @@
+databases:
+  - name: swaystudio-db
+    plan: free
+    databaseName: swaystudio
+    user: swaystudio
+
+services:
+  - type: web
+    name: swaystudio-web
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input
+    startCommand: bash start.sh
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "0"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "*.onrender.com,localhost,127.0.0.1"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://*.onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: swaystudio-db
+          property: connectionString
+      - key: STORE_CONTACT_EMAIL
+        sync: false

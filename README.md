@@ -4,7 +4,7 @@ A Cambodia-focused clothing storefront built with Django, HTML, CSS, and vanilla
 
 ## Run locally
 
-Python 3.9 or newer is required. Django 4.2 is pinned for this environment's Python 3.9 interpreter; both Python 3.9 and Django 4.2 are out of upstream security support, so use supported versions before a public launch.
+Python 3.10 or newer is recommended; it uses Django 5.2 LTS. Python 3.9 uses the final Django 4.2 patch only for local compatibility and is no longer supported upstream.
 
 ```sh
 python3 -m venv .venv
@@ -38,3 +38,9 @@ The callback URL must be reachable over HTTPS and allowlisted in the ABA merchan
 Set `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=0`, and `DJANGO_ALLOWED_HOSTS`; configure HTTPS and secure cookie settings at the deployment layer. Set `STORE_CONTACT_EMAIL` to the real store inbox. Review the sample shipping, returns, and privacy page copy against the actual business terms. Replace the external sample photos/fonts with licensed assets and replace sample sizes, colors, and inventory in Admin. Checkout currently has no tax calculation or payment refunds workflow; configure these for the actual business before launch.
 
 Run the regression suite with `python manage.py test shop`.
+
+## Temporary public preview on Render
+
+The `render.yaml` Blueprint defines a free web service and free PostgreSQL database for previewing the storefront. Push the project to GitHub, then in Render choose **New > Blueprint**, connect the private `Whatthap/SwayStudio` repository, and apply the Blueprint. Enter the real `STORE_CONTACT_EMAIL` in Render when prompted. Render will provide the public `.onrender.com` URL after the first deploy.
+
+Free Render web services sleep after 15 minutes without traffic. Free PostgreSQL databases expire after 30 days and are later deleted, so this setup is only for a temporary preview; do not store real customer or order data there. Use a paid persistent database and hosting plan before accepting real orders. The preview uses sample seeded inventory and cash on delivery; configure the real business contact, policies, shipping, stock, and payment details before launch.
